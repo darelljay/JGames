@@ -1,8 +1,11 @@
+import { FRUITS } from "./fruits.js";
+
 const Engine = Matter.Engine,
       Render = Matter.Render,
       Runner = Matter.Runner,
       World = Matter.World,
       Bodies = Matter.Bodies;
+
 // 앤진 선언
 const engine = Engine.create();
 
@@ -17,6 +20,7 @@ const render = Render.create({
         height: 850,
     }
 });
+
 // 월드 선언
 const world = engine.world;
 
@@ -38,6 +42,7 @@ const ground = Bodies.rectangle(310,820,620,60,{
 
 const topLine = Bodies.rectangle(310,150,620,2,{
     isStatic: true, // 고정해주는 기능
+    isSensor: true,
     render: {fillStyle: '#E6B143'}
 });
 // 벽 배치
@@ -45,3 +50,30 @@ World.add(world,[leftWall,rightWall,ground,topLine]);
 
 Render.run(render);
 Runner.run(engine);
+
+// 현재 과일값을 저장할 변수 생성
+let currentBody = null;
+let currentFruit = null;
+
+
+// 과일 떨어지는 함수 만들기 
+const addFruit = ()=>{
+    // 과일 Index 저장
+    const index = Math.floor(Math.random()*5);    
+    const fruit = FRUITS[index];
+    const body = Bodies.circle(300,50,fruit.radius,{
+        index: index,
+        isSleeping: true,
+        render:{
+            sprite: {texture : `${fruit.name}.png`},
+        },
+        restitution : 0.2 
+    });
+
+    currentBody = body;
+    currentFruit = fruit;
+    World.add(world,body);
+}
+
+addFruit();
+
