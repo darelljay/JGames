@@ -4,7 +4,8 @@ const Engine = Matter.Engine,
       Render = Matter.Render,
       Runner = Matter.Runner,
       World = Matter.World,
-      Bodies = Matter.Bodies;
+      Bodies = Matter.Bodies,
+      Body = Matter.Body;
 
 // 앤진 선언
 const engine = Engine.create();
@@ -55,6 +56,8 @@ Runner.run(engine);
 let currentBody = null;
 let currentFruit = null;
 
+// 키 조작을 제어하는 변수 생성
+let disableAction = false; 
 
 // 과일 떨어지는 함수 만들기 
 const addFruit = ()=>{
@@ -67,12 +70,41 @@ const addFruit = ()=>{
         render:{
             sprite: {texture : `${fruit.name}.png`},
         },
-        restitution : 0.2 
+        restitution : 0.5 
     });
 
     currentBody = body;
     currentFruit = fruit;
     World.add(world,body);
+}
+
+window.onkeydown = (e) =>{
+
+    // 제어 조작 변수가 true인 경우 바로 리턴 
+    if (disableAction) return;
+
+    switch(e.code){
+        case "KeyA":
+            Body.setPosition(currentBody,{
+                x:currentBody.position.x-10,
+                y: currentBody.position.y
+            })
+            break
+        case "KeyD":
+            Body.setPosition(currentBody,{
+                x:currentBody.position.x+10,
+                y: currentBody.position.y
+            })
+            break;
+        case "KeyS":
+            currentBody.isSleeping = false;
+            disableAction = true;
+            setTimeout(()=>{
+                addFruit();
+                disableAction = false
+            },1000)
+            break;    
+    }
 }
 
 addFruit();
