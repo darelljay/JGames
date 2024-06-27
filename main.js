@@ -1,11 +1,13 @@
 import { FRUITS } from "./fruits.js";
+// import { Matter } from "./matter.js";
 
 const Engine = Matter.Engine,
       Render = Matter.Render,
       Runner = Matter.Runner,
       World = Matter.World,
       Bodies = Matter.Bodies,
-      Body = Matter.Body;
+      Body = Matter.Body,
+      Events = Matter.Events;
 
 // 앤진 선언
 const engine = Engine.create();
@@ -106,6 +108,35 @@ window.onkeydown = (e) =>{
             break;    
     }
 }
+
+Events.on(engine,"collisionStart",(event)=>{
+    // 콜리젠 이벤트 발생시 생기는 모든 오브젝트를 비교
+    event.pairs.forEach((collision) => {
+        if(collision.bodyA.index == collision.bodyB.index){
+            // 기존 과일의 index를 저장
+            const index = collision.bodyA.index
+
+            // 충돌이 일어나는 같은 과일 제거
+            World.remove(world,[collision.bodyA,collision.bodyB])
+
+            const newFruit = FRUITS[index + 1];
+            const newBody = Bodies.circle(
+                collision.collision.supports[0].x,
+                collision.collision.supports[0].y,
+                newFruit.radius,
+                {
+                    // 과일 index 저장
+                    index : index+1,
+
+                    // 새로운 과일 랜더링
+                    render:{sprite:{texture:`${newFruit.name}.png`}},
+
+                }
+            )
+            World.add(world, newBody);
+        }
+    });
+})
 
 addFruit();
 
