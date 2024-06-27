@@ -44,6 +44,8 @@ const ground = Bodies.rectangle(310,820,620,60,{
 });
 
 const topLine = Bodies.rectangle(310,150,620,2,{
+    // 이벤트 처리를 위해 으름을 지정
+    name: "topline",
     isStatic: true, // 고정해주는 기능
     isSensor: true,
     render: {fillStyle: '#E6B143'}
@@ -87,12 +89,14 @@ window.onkeydown = (e) =>{
 
     switch(e.code){
         case "KeyA":
+            if(currentBody.position.x - currentFruit.radius > 30)
             Body.setPosition(currentBody,{
                 x:currentBody.position.x-10,
                 y: currentBody.position.y
             })
             break
         case "KeyD":
+            if(currentBody.position.x + currentFruit.radius < 590)
             Body.setPosition(currentBody,{
                 x:currentBody.position.x+10,
                 y: currentBody.position.y
@@ -102,8 +106,9 @@ window.onkeydown = (e) =>{
             currentBody.isSleeping = false;
             disableAction = true;
             setTimeout(()=>{
-                addFruit();
                 disableAction = false
+                addFruit();
+                
             },1000)
             break;    
     }
@@ -134,6 +139,11 @@ Events.on(engine,"collisionStart",(event)=>{
                 }
             )
             World.add(world, newBody);
+
+        }
+        if(!disableAction && collision.bodyA.name === "topLine" || collision.bodyB.name === "topLine"){
+        alert("Game over");
+        disableAction = true;
         }
     });
 })
